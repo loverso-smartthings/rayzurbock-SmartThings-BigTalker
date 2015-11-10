@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta1 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta2 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2015 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -3679,5 +3679,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta1"
+    state.appversion = "1.1.4-Beta2"
 }
