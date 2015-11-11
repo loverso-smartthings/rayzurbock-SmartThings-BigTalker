@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta2 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta3 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2015 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -2883,36 +2883,47 @@ def Talk(phrase, customSpeechDevice, evt){
                     	}
                 	} else {
                     	//currentTrack doesn't have data or is not supported on this device
-                    	LOGTRACE("mP | ${it.displayName} | (2) Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
-                        if (currentStatus == "disconnected") {
-	                        //VLCThing?
-    	                    LOGTRACE("mP | ${it.displayName} | cT=Null | cS=disconnected | Sending playTrackAndResume().")
-	                        if (settings.speechVolume) { 
-                    	        it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
-                        	} else { 
-                                if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
-                	            if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
-                            	it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
-                        	}
-                    	} else {
-    	                    if (currentStatus == "playing") {
-            	                LOGTRACE("mP | ${it.displayName} | cT=Null | cS=playing | Sending playTrackAndResume().")
-                	            if (settings.speechVolume) { 
-                        	        it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
-                            	} else { 
-        	                        if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
-            	                    if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
-                	            }
+                        if (!(currentStatus == null)) {
+                    	    LOGTRACE("mP | ${it.displayName} | (2) Current Status: ${currentStatus}.")
+                            if (currentStatus == "disconnected") {
+	                            //VLCThing?
+    	                        LOGTRACE("mP | ${it.displayName} | cT=Null | cS=disconnected | Sending playTrackAndResume().")
+	                            if (settings.speechVolume) { 
+                    	            it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
+                        	    } else { 
+                                    if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
+                	                if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
+                            	    it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
+                        	    }
                     	    } else {
-                            	LOGTRACE("mP | ${it.displayName} | cT=Null | cS<>playing | Sending playTrackAndRestore().")
-                            	if (settings.speechVolume) { 
-                                	it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)
-                            	} else { 
-	                                if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, currentVolume) }
-    	                            if (currentVolume == 0) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, 75) }
-        	                    }
-            	            }
-                	    }
+    	                        if (currentStatus == "playing") {
+            	                    LOGTRACE("mP | ${it.displayName} | cT=Null | cS=playing | Sending playTrackAndResume().")
+                	                if (settings.speechVolume) { 
+                        	            it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
+                            	    } else { 
+        	                            if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
+            	                        if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
+                	                }
+                    	        } else {
+                            	    LOGTRACE("mP | ${it.displayName} | cT=Null | cS<>playing | Sending playTrackAndRestore().")
+                            	    if (settings.speechVolume) { 
+                                	    it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)
+                            	    } else { 
+	                                    if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, currentVolume) }
+    	                                if (currentVolume == 0) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, 75) }
+        	                        }
+            	                }
+                	        }
+                        } else {
+                            //currentTrack and currentStatus are both null
+                            LOGTRACE("mP | ${it.displayName} | (3) cT=Null | cS=Null | Sending playTrackAndRestore().")
+                            if (settings.speechVolume) { 
+                                it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)
+                            } else { 
+	                            if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, currentVolume) }
+    	                        if (currentVolume == 0) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, 75) }
+        	                }
+                        }
                 	}
             	} else {
                     LOGDEBUG("Sound: ${state.sound.uri} , ${state.sound.duration}")
@@ -3679,5 +3690,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta2"
+    state.appversion = "1.1.4-Beta3"
 }
