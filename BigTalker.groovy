@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta3 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta4 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2015 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -1593,22 +1593,23 @@ def pageConfigureSpeechDeviceType(){
 }
 
 def pageConfigureDefaults(){
-    def dynPageProperties = [
-            name:      "pageConfigureDefaults",
-            title:     "Configure Defaults",
-            install:   false,
-            uninstall: false
-    ]
     if (!(state.installed == true)) { 
-        dynPageProperties = [
+       state.dynPageProperties = [
             name:      "pageConfigureDefaults",
             title:     "Configure Defaults",
             install:   false,
             uninstall: false,
             nextPage:  "pageConfigureEvents"
         ]
+    } else {
+       state.dynPageProperties = [
+            name:      "pageConfigureDefaults",
+            title:     "Configure Defaults",
+            install:   true,
+            uninstall: true
+        ]
     }
-    return dynamicPage(dynPageProperties) {
+    return dynamicPage(state.dynPageProperties) {
     //dynamicPage(name: "pageConfigureDefaults", title: "Configure Defaults", nextPage: "${myNextPage}", install: false, uninstall: false) {
         section("Talk with:"){
            if (state.speechDeviceType == null || state.speechDeviceType == "") { state.speechDeviceType = "capability.musicPlayer" }
@@ -2126,17 +2127,21 @@ def pageConfigTime(){
 
 def installed() {
 	state.installed = true
-    LOGTRACE("Installed with settings: ${settings}")
+    //LOGTRACE("Installed with settings: ${settings}")
+    LOGTRACE("Installed")
 	initialize()
+    myRunIn(60, poll)
 //End installed()
 }
 
 def updated() {
-    state.installed = true
-	LOGTRACE("Updated with settings: ${settings}")
-	unsubscribe()
     unschedule()
+    state.installed = true
+	//LOGTRACE("Updated with settings: ${settings}")
+    LOGTRACE("Updated settings")
+	unsubscribe()
 	initialize()
+    myRunIn(60, poll)
 //End updated()
 }
 
@@ -2826,30 +2831,11 @@ def Talk(phrase, customSpeechDevice, evt){
                 //Use Default Speech Device
                 currentSpeechDevices = settings.speechDeviceDefault
             }
+            LOGTRACE("Last poll: ${state.lastPoll}")
             //Iterate Speech Devices and talk
 		    def attrs = currentSpeechDevices.supportedAttributes
             currentSpeechDevices.each(){
             	if (state.speechDeviceType == "capability.musicPlayer"){
-                	state.refresh = false
-                	state.poll = false
-                	try {
-                    	LOGTRACE("refresh()")
-                    	it.refresh()
-                    	state.refresh = true
-                	}
-                	catch (ex) {
-                    	LOGDEBUG("ERROR(informational): it.refresh: ${ex}")
-                	}
-                	if (!state.refresh) {
-                    	try {
-                        	LOGTRACE("poll()")
-                        	it.poll()
-                        	state.poll = true
-                    	}
-                    	catch (ex) {
-                        	LOGDEBUG ("ERROR(informational): it.poll: ${ex}")
-                    	}
-                	}
                 	LOGDEBUG("attrs=${attrs}")
                 	def currentStatus = it.latestValue('status')
                 	def currentTrack = it.latestState("trackData")?.jsonValue
@@ -2858,26 +2844,29 @@ def Talk(phrase, customSpeechDevice, evt){
                 	LOGDEBUG("currentTrack:${currentTrack}")
                 	LOGDEBUG("currentVolume:${currentVolume}")
                     LOGDEBUG("Sound: ${state.sound.uri} , ${state.sound.duration}")
-                	if (settings.speechVolume) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}, Desired Volume: ${settings.speechVolume}") }
-                	if (!(settings.speechVolume)) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}") }
+                	if (settings.speechVolume) { LOGTRACE("${it.displayName} | Volume: ${currentVolume}, Desired Volume: ${settings.speechVolume}") }
+                	if (!(settings.speechVolume)) { LOGTRACE("${it.displayName} | Volume: ${currentVolume}") }
                 	if (!(currentTrack == null)){
                     	//currentTrack has data
-                    	LOGTRACE("mP | ${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
-                    	if (currentStatus == 'playing') {
-    	                    LOGTRACE("${it.displayName} | cT<>Null | cS=playing | Sending playTrackAndResume().")
+                        if (!(currentTrack?.status == null)) { LOGTRACE("mP | ${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.") }
+                    	if (currentTrack?.status == null) { LOGTRACE("mP | ${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}.") }
+                    	if (currentStatus == 'playing' || currentTrack?.status == 'playing') {
+    	                    LOGTRACE("${it.displayName} | cT<>null | cS/cT=playing | Sending playTrackAndResume().")
         	                if (settings.speechVolume) { 
-                	            it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
+                	            if (settings.speechVolume == currentVolume){it.playTrackAndResume(state.sound.uri, state.sound.duration)}
+                                if (!(settings.speechVolume == currentVolume)){it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)}
                     	    } else { 
-                            	if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
+                            	if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration) }
                             	if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
                         	}
                     	} else
                     	{
-                        	LOGTRACE("mP | ${it.displayName} | cT<>Null | cS<>playing | Sending playTrackAndRestore().")
+                        	LOGTRACE("mP | ${it.displayName} | cT<>null | cS/cT<>playing | Sending playTrackAndRestore().")
                         	if (settings.speechVolume) { 
-	                            it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)
+	                            if (settings.speechVolume == currentVolume){it.playTrackAndRestore(state.sound.uri, state.sound.duration)}
+                                if (!(settings.speechVolume == currentVolume)){it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)}
 	                        } else { 
-            	                if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, currentVolume) }
+            	                if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration) }
                 	            if (currentVolume == 0) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, 75) }
                     	    }
                     	}
@@ -2887,40 +2876,44 @@ def Talk(phrase, customSpeechDevice, evt){
                     	    LOGTRACE("mP | ${it.displayName} | (2) Current Status: ${currentStatus}.")
                             if (currentStatus == "disconnected") {
 	                            //VLCThing?
-    	                        LOGTRACE("mP | ${it.displayName} | cT=Null | cS=disconnected | Sending playTrackAndResume().")
+    	                        LOGTRACE("mP | ${it.displayName} | cT=null | cS=disconnected | Sending playTrackAndResume().")
 	                            if (settings.speechVolume) { 
-                    	            it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
+                    	            if (settings.speechVolume == currentVolume){it.playTrackAndResume(state.sound.uri, state.sound.duration)}
+                                    if (!(settings.speechVolume == currentVolume)){it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)}
                         	    } else { 
-                                    if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
+                                    if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration) }
                 	                if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
                             	    it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
                         	    }
                     	    } else {
     	                        if (currentStatus == "playing") {
-            	                    LOGTRACE("mP | ${it.displayName} | cT=Null | cS=playing | Sending playTrackAndResume().")
+            	                    LOGTRACE("mP | ${it.displayName} | cT=null | cS=playing | Sending playTrackAndResume().")
                 	                if (settings.speechVolume) { 
-                        	            it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)
+                        	            if (settings.speechVolume == currentVolume){it.playTrackAndResume(state.sound.uri, state.sound.duration)}
+                                        if (!(settings.speechVolume == currentVolume)){it.playTrackAndResume(state.sound.uri, state.sound.duration, settings.speechVolume)}
                             	    } else { 
-        	                            if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration, currentVolume) }
+        	                            if (currentVolume > 50) { it.playTrackAndResume(state.sound.uri, state.sound.duration) }
             	                        if (currentVolume == 0) { it.playTrackAndResume(state.sound.uri, state.sound.duration, 75) }
                 	                }
                     	        } else {
-                            	    LOGTRACE("mP | ${it.displayName} | cT=Null | cS<>playing | Sending playTrackAndRestore().")
+                            	    LOGTRACE("mP | ${it.displayName} | cT=null | cS<>playing | Sending playTrackAndRestore().")
                             	    if (settings.speechVolume) { 
-                                	    it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)
+                                	    if (settings.speechVolume == currentVolume){it.playTrackAndRestore(state.sound.uri, state.sound.duration)}
+                                        if (!(settings.speechVolume == currentVolume)){it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)}
                             	    } else { 
-	                                    if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, currentVolume) }
+	                                    if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration) }
     	                                if (currentVolume == 0) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, 75) }
         	                        }
             	                }
                 	        }
                         } else {
                             //currentTrack and currentStatus are both null
-                            LOGTRACE("mP | ${it.displayName} | (3) cT=Null | cS=Null | Sending playTrackAndRestore().")
+                            LOGTRACE("mP | ${it.displayName} | (3) cT=null | cS=null | Sending playTrackAndRestore().")
                             if (settings.speechVolume) { 
-                                it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)
+                                if (settings.speechVolume == currentVolume){it.playTrackAndRestore(state.sound.uri, state.sound.duration)}
+                                if (!(settings.speechVolume == currentVolume)){it.playTrackAndRestore(state.sound.uri, state.sound.duration, settings.speechVolume)}
                             } else { 
-	                            if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, currentVolume) }
+	                            if (currentVolume > 50) { it.playTrackAndRestore(state.sound.uri, state.sound.duration) }
     	                        if (currentVolume == 0) { it.playTrackAndRestore(state.sound.uri, state.sound.duration, 75) }
         	                }
                         }
@@ -3600,13 +3593,13 @@ def getTimeFromCalendar(includeSeconds, includeAmPm){
 
 //myRunIn from ST:Geko / Statusbits SmartAlarm app http://statusbits.github.io/smartalarm/
 private def myRunIn(delay_s, func) {
-    LOGDEBUG("myRunIn(${delay_s})")
+    //LOGDEBUG("myRunIn(${delay_s},${func})")
 
     if (delay_s > 0) {
         def tms = now() + (delay_s * 1000)
         def date = new Date(tms)
         runOnce(date, func)
-        LOGDEBUG("'${func}' scheduled to run at ${date}")
+        //LOGDEBUG("'${func}' scheduled to run at ${date}")
     }
 }
 
@@ -3675,8 +3668,78 @@ def getWeather(mode) {
 	}
 	else {
         LOGDEBUG("SmartThings location zipcode not set!, Cannot retrieve weather.")
-		return("Please set the location of your hub with the SmartThings mobile app, or enter a zip code to receive weather forecasts.")
+		return("Please set the location of your hub with the SmartThings mobile app to receive weather forecasts.")
 	}
+}
+
+def poll(){
+    if (state.speechDeviceType == "capability.musicPlayer") {
+        if (state?.polledDevices == null) { state.polledDevices = "!" }
+        if (!(settings?.speechDeviceDefault == null)) {dopoll(settings.speechDeviceDefault)}
+        if (!(settings?.motionSpeechDevice1 == null)) {dopoll(settings.motionSpeechDevice1)}
+        if (!(settings?.motionSpeechDevice2 == null)) {dopoll(settings.motionSpeechDevice2)}
+        if (!(settings?.motionSpeechDevice3 == null)) {dopoll(settings.motionSpeechDevice3)}
+        if (!(settings?.switchSpeechDevice1 == null)) {dopoll(settings.switchSpeechDevice1)}
+        if (!(settings?.switchSpeechDevice2 == null)) {dopoll(settings.switchSpeechDevice2)}
+        if (!(settings?.switchSpeechDevice3 == null)) {dopoll(settings.switchSpeechDevice3)}
+        if (!(settings?.presSpeechDevice1 == null)) {dopoll(settings.presSpeechDevice1)}
+        if (!(settings?.presSpeechDevice2 == null)) {dopoll(settings.presSpeechDevice2)}
+        if (!(settings?.presSpeechDevice3 == null)) {dopoll(settings.presSpeechDevice3)}
+        if (!(settings?.lockSpeechDevice1 == null)) {dopoll(settings.lockSpeechDevice1)}
+        if (!(settings?.lockSpeechDevice2 == null)) {dopoll(settings.lockSpeechDevice2)}
+        if (!(settings?.lockSpeechDevice3 == null)) {dopoll(settings.lockSpeechDevice3)}
+        if (!(settings?.contactSpeechDevice1 == null)) {dopoll(settings.contactSpeechDevice1)}
+        if (!(settings?.contactSpeechDevice2 == null)) {dopoll(settings.contactSpeechDevice2)}
+        if (!(settings?.contactSpeechDevice3 == null)) {dopoll(settings.contactSpeechDevice3)}
+        if (!(settings?.modePhraseSpeechDevice1 == null)) {dopoll(settings.modePhraseSpeechDevice1)}
+        if (!(settings?.thermostatSpeechDevice1 == null)) {dopoll(settings.thermostatSpeechDevice1)}
+        if (!(settings?.accelerationSpeechDevice1 == null)) {dopoll(settings.accelerationSpeechDevice1)}
+        if (!(settings?.accelerationSpeechDevice2 == null)) {dopoll(settings.accelerationSpeechDevice2)}
+        if (!(settings?.accelerationSpeechDevice3 == null)) {dopoll(settings.accelerationSpeechDevice3)}
+        if (!(settings?.waterSpeechDevice1 == null)) {dopoll(settings.waterSpeechDevice1)}
+        if (!(settings?.waterSpeechDevice2 == null)) {dopoll(settings.waterSpeechDevice2)}
+        if (!(settings?.waterSpeechDevice3 == null)) {dopoll(settings.waterSpeechDevice3)}
+        if (!(settings?.smokeSpeechDevice1 == null)) {dopoll(settings.smokeSpeechDevice1)}
+        if (!(settings?.smokeSpeechDevice2 == null)) {dopoll(settings.smokeSpeechDevice2)}
+        if (!(settings?.smokeSpeechDevice3 == null)) {dopoll(settings.smokeSpeechDevice3)}
+        if (!(settings?.buttonSpeechDevice1 == null)) {dopoll(settings.buttonSpeechDevice1)}
+        if (!(settings?.buttonSpeechDevice2 == null)) {dopoll(settings.buttonSpeechDevice2)}
+        if (!(settings?.buttonSpeechDevice3 == null)) {dopoll(settings.buttonSpeechDevice3)}
+        if (!(settings?.timeslotSpeechDevice1 == null)) {dopoll(settings.timeslotSpeechDevice1)}
+        if (!(settings?.timeslotSpeechDevice2 == null)) {dopoll(settings.timeslotSpeechDevice2)}
+        if (!(settings?.timeslotSpeechDevice3 == null)) {dopoll(settings.timeslotSpeechDevice3)}
+        state.polledDevices = "!"
+        state.lastPoll = getTimeFromCalendar(true,true)
+        myRunIn(60, poll)
+    }
+}
+def dopoll(pollSpeechDevice){
+    pollSpeechDevice.each(){
+        if (!(state.polledDevices.find(",${it.displayName}"))) {
+            state.polledDevices = "${state.polledDevices},${it.displayName}"
+            //LOGDEBUG("Polling: ${it.displayName}")
+            state.refresh = false
+            state.poll = false
+            try {
+                //LOGTRACE("refresh()")
+                it.refresh()
+                state.refresh = true
+            }
+            catch (ex) {
+                //LOGDEBUG("ERROR(informational): it.refresh: ${ex}")
+            }
+            if (!state.refresh) {
+                try {
+                    //LOGTRACE("poll()")
+                    it.poll()
+                    state.poll = true
+                }
+                catch (ex) {
+                    //LOGDEBUG ("ERROR(informational): it.poll: ${ex}")
+                }
+            }
+        }
+    }
 }
 
 def LOGDEBUG(txt){
@@ -3690,5 +3753,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta3"
+    state.appversion = "1.1.4-Beta4"
 }
