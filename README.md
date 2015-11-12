@@ -1,7 +1,7 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, Ubi and VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.1.4-Beta3 <br />
+Version: 1.1.4-Beta4 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -130,3 +130,8 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
   * BugFix:  Resolve an error that is present if both currentTrack and currentStatus return null. "java.lang.NullPointerException: Cannot get property 'status' on null object"
 * 11/10/2015 - 1.1.4-Beta3
   * BugFix:  Last update did not save as expected. Incrementing version and resaving project
+* 11/12/2015 - 1.1.4-Beta4
+  * BugFix: Talk() function has been further optimized and more bugs have been resolved.
+  * BugFix: Setting changes were not activated when editing within the "Configure Defaults" menu and pressing Done.  Settings only activated after editing within the "Configure Events" menu and pressing Done.  Resolved.
+  * Feature Enhancement:  Talk() now checks two places for current playing status to try to better detect if the device is playing.
+  * New Feature: Upon Install or settings update, a poll process will execute every minute to check all configured speech devices for their latest status.  This is in an effort to better detect if a device is playing before interrupting to speak. (Note: VLCThing doesn't report 'playing' until after the second poll or 2 minutes into a playlist; others may as well).
