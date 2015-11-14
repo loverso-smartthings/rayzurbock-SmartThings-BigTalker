@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta4 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta5 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2015 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -2823,6 +2823,9 @@ def Talk(phrase, customSpeechDevice, evt){
                 
             }
         }
+        unschedule("poll")
+        LOGDEBUG("Delaying polling for 120 seconds")
+        myRunIn(120, poll)
         if (state.ableToTalk){
             state.sound.duration = (state.sound.duration.toInteger() + 5).toString()  //Try to prevent cutting out, add seconds to the duration
             if (!(customSpeechDevice == null)) {
@@ -3674,6 +3677,7 @@ def getWeather(mode) {
 
 def poll(){
     if (state.speechDeviceType == "capability.musicPlayer") {
+        LOGDEBUG("Polling speech device(s) for latest status")
         if (state?.polledDevices == null) { state.polledDevices = "!" }
         if (!(settings?.speechDeviceDefault == null)) {dopoll(settings.speechDeviceDefault)}
         if (!(settings?.motionSpeechDevice1 == null)) {dopoll(settings.motionSpeechDevice1)}
@@ -3753,5 +3757,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta4"
+    state.appversion = "1.1.4-Beta5"
 }
