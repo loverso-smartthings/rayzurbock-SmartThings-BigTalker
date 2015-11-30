@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta5 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta6 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2015 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -52,6 +52,7 @@ preferences {
     page(name: "pageConfigSmoke")
     page(name: "pageConfigButton")
     page(name: "pageConfigTime")
+    page(name: "pageHelpPhraseTokens")
 //End preferences
 }
 
@@ -70,17 +71,17 @@ def pageStart(){
                 href "pageTalkNow", title:"Talk Now", description:"Tap to setup talk now" 
             }
         }
-        section(){
-            paragraph "Big Talker is a SmartApp that can make your house talk depending on various triggered events."
-            paragraph "Pair with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing on your computer or Raspberry Pi!\n"
-            paragraph "You can contribute to the development of this SmartApp by making a PayPal donation to rayzur@rayzurbock.com or visit http://rayzurbock.com/store"
-        }
-        section(){
+        section("About"){
+            def AboutApp = ""
+            AboutApp += 'Big Talker is a SmartApp that can make your house talk depending on various triggered events.\n\n'
+            AboutApp += 'Pair with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device!\n\n'
+            AboutApp += 'You can contribute to the development of this SmartApp by making a PayPal donation to rayzur@rayzurbock.com or visit http://rayzurbock.com/store\n\n'
             if (!(state.appversion == null)){ 
-                paragraph "Big Talker ${state.appversion}\nhttp://www.github.com/rayzurbock\n" 
+                AboutApp += "Big Talker ${state.appversion}\nhttp://www.github.com/rayzurbock\n" 
             } else {
-                paragraph "Big Talker \nhttp://www.github.com/rayzurbock\n" 
+                AboutApp += 'Big Talker \nhttp://www.github.com/rayzurbock\n'
             }
+            paragraph(AboutApp)
         }
     }
 }
@@ -97,7 +98,7 @@ def pageStatus(){
             enabledDevices += "musicPlayer (Sonos, VLCThing)"
         }
         if (state.speechDeviceType == "capability.speechSynthesis") {
-            enabledDevices += "speechSynthesis (Ubi, VLCThing)"
+            enabledDevices += "speechSynthesis (Ubi)"
         }
         enabledDevices += "\n\n"
         enabledDevices += "Default Speech Devices:\n"
@@ -121,6 +122,10 @@ def pageStatus(){
             def defEndTime =  getTimeFromDateString(settings.defaultEndTime, true)
             enabledDevices += "Default Allowed Talk Time:\n ${defStartTime} - ${defEndTime}"
         }
+        enabledDevices += "\n\n"
+        enabledDevices += "Hub ZipCode* for Weather: ${location.zipCode}\n"
+        enabledDevices += "*SmartThings uses GPS to ZipCode conversion; May not be exact"
+        
         section ("Defaults:"){
             paragraph enabledDevices
         }
@@ -1573,7 +1578,34 @@ def pageTalkNow(){
                 state.lastTalkNow = settings.speechTalkNow
             }
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
+}
+
+def pageHelpPhraseTokens(){
+    dynamicPage(name: "pageHelpPhraseTokens", title: "Available Phrase Tokens", install: false, uninstall:false){
+       section("The following tokens can be used in your event phrases and will be replaced as listed:"){
+       	   def AvailTokens = ""
+           AvailTokens += "%devicename% = Triggering devices display name\n\n"
+           AvailTokens += "%devicetype% = Triggering device type; motion, switch, etc\n\n"
+           AvailTokens += "%locationname% = Hub location name; home, work, etc\n\n"
+           AvailTokens += "%lastmode% = Last hub mode; home, away, etc\n\n"
+           AvailTokens += "%mode% = Current hub mode; home, away, etc\n\n"
+           AvailTokens += "%time% = Current hub time; HH:mm am/pm\n\n"
+           AvailTokens += "%weathercurrent% = Current weather based on hub location\n\n"
+           AvailTokens += "%weathercurrent(00000)% = Current weather* based on custom zipcode (replace 00000)\n\n"
+           AvailTokens += "%weathertoday% = Today's weather forecast* based on hub location\n\n"
+           AvailTokens += "%weathertoday(00000)% = Today's weather forecast* based on custom zipcode (replace 00000)\n\n"
+           AvailTokens += "%weathertonight% = Tonight's weather forecast* based on hub location\n\n"
+           AvailTokens += "%weathertonight(00000)% = Tonight's weather* forecast based on custom zipcode (replace 00000)\n\n"
+           AvailTokens += "%weathertomorrow% = Tomorrow's weather forecast* based on hub location\n\n"
+           AvailTokens += "%weathertomorrow(00000)% = Tomorrow's weather forecast* based on custom zipcode (replace 00000)\n\n"
+           AvailTokens += "\n*Weather forecasts provided by Weather Underground"
+           paragraph(AvailTokens)
+       }
+   }
 }
 
 def pageConfigureSpeechDeviceType(){
@@ -1581,9 +1613,9 @@ def pageConfigureSpeechDeviceType(){
     dynamicPage(name: "pageConfigureSpeechDeviceType", title: "Configure", nextPage: "pageConfigureDefaults", install: false, uninstall: false) {
         section ("Speech Device Type Support"){
             paragraph "${app.label} can support either 'Music Player' or 'Speech Synthesis' devices."
-            paragraph "'Music Player' typically supports devices such as Sonos and VLCThing.\n\n'Speech Synthesis' typically supports devices such as Ubi and VLCThing."
+            paragraph "'Music Player' typically supports devices such as Sonos and VLCThing.\n\n'Speech Synthesis' typically supports devices such as Ubi."
             paragraph "Set to ON for 'Music Player' support, OFF for 'Speech Synthesis' support"
-            input "speechDeviceType", "bool", title: "ON=Sonos/VLCThing, OFF=Ubi/VLCThing", required: true, defaultValue: true, submitOnChange: true
+            input "speechDeviceType", "bool", title: "ON=Sonos/VLCThing, OFF=Ubi", required: true, defaultValue: true, submitOnChange: true
             paragraph "\nClick Next (top right) to continue configuration...\n"
             if (speechDeviceType == true || speechDeviceType == null) {state.speechDeviceType = "capability.musicPlayer"}
             if (speechDeviceType == false) {state.speechDeviceType = "capability.speechSynthesis"}
@@ -1733,6 +1765,9 @@ def pageConfigMotion(){
             input name: "motionStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "motionEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime3 == null))
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
 //End pageConfigMotion()
 }
@@ -1771,6 +1806,9 @@ def pageConfigSwitch(){
             input name: "switchModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
             input name: "switchStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "switchEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime3 == null))
+        }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
         }
     }
 //End pageConfigSwitch()
@@ -1811,6 +1849,9 @@ def pageConfigPresence(){
             input name: "presStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "presEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime3 == null))
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
 //End pageConfigPresence()
 }
@@ -1849,6 +1890,9 @@ def pageConfigLock(){
             input name: "lockModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
             input name: "lockStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "lockEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime3 == null))
+        }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
         }
     }
 //End pageConfigLock()
@@ -1889,6 +1933,9 @@ def pageConfigContact(){
             input name: "contactStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "contactEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime3 == null))
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
 //End pageConfigContact()
 }
@@ -1911,6 +1958,9 @@ def pageConfigMode(){
             input name: "modePhraseSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "modeStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "modeEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.modeStartTime1 == null))
+        }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
         }
     }
 //End pageConfigMode()
@@ -1938,6 +1988,9 @@ def pageConfigThermostat(){
             input name: "thermostatModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
             input name: "thermostatStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "thermostatEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.thermostatStartTime1 == null))
+        }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
         }
     }
 //End pageConfigThermostat()
@@ -1978,6 +2031,9 @@ def pageConfigAcceleration(){
             input name: "accelerationStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "accelerationEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime3 == null))
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
 //End pageConfigAcceleration()
 }
@@ -2016,6 +2072,9 @@ def pageConfigWater(){
             input name: "waterModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
             input name: "waterStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "waterEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime3 == null))
+        }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
         }
     }
 //End pageConfigWater()
@@ -2061,6 +2120,9 @@ def pageConfigSmoke(){
             input name: "smokeStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "smokeEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime3 == null))
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
 //End pageConfigSmoke()
 }
@@ -2095,6 +2157,9 @@ def pageConfigButton(){
             input name: "buttonStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, submitOnChange: true
             input name: "buttonEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime3 == null))
         }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
+        }
     }
 //End pageConfigSmoke()
 }
@@ -2121,6 +2186,9 @@ def pageConfigTime(){
             input name: "timeSlotOnTime3", type: "text", title: "Say on schedule:", required: false
             input name: "timeSlotSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "timeSlotModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+        }
+        section("Help"){
+            href "pageHelpPhraseTokens", title:"Phrase Tokens", description:"Tap for a list of phrase tokens"
         }
     }
 }
@@ -2785,6 +2853,7 @@ def processButtonEvent(index, evt){
 //END HANDLE BUTTON
 
 def processPhraseVariables(phrase, evt){
+    def zipCode = location.zipCode
     if (phrase.contains("%devicename%")) {phrase = phrase.replace('%devicename%', evt.displayName)}  //User given name of the device
     if (phrase.contains("%devicetype%")) {phrase = phrase.replace('%devicetype%', evt.name)}  //Device type: motion, switch, etc...
     if (phrase.contains("%devicechange%")) {phrase = phrase.replace('%devicechange%', evt.value)}  //State change that occurred: on/off, active/inactive, etc...
@@ -2792,10 +2861,54 @@ def processPhraseVariables(phrase, evt){
     if (phrase.contains("%lastmode%")) {phrase = phrase.replace('%lastmode%', state.lastMode)}
     if (phrase.contains("%mode%")) {phrase = phrase.replace('%mode%', location.mode)}
     if (phrase.contains("%time%")) {phrase = phrase.replace('%time%', getTimeFromCalendar(false,true))}
-    if (phrase.contains("%weathercurrent%")) {phrase = phrase.replace('%weathercurrent%', getWeather("current"))}
-    if (phrase.contains("%weathertoday%")) {phrase = phrase.replace('%weathertoday%', getWeather("today"))}
-    if (phrase.contains("%weathertonight%")) {phrase = phrase.replace('%weathertonight%', getWeather("tonight"))}
-    if (phrase.contains("%weathertomorrow%")) {phrase = phrase.replace('%weathertomorrow%', getWeather("tomorrow"))}
+    if (phrase.contains("%weathercurrent%")) {phrase = phrase.replace('%weathercurrent%', getWeather("current", zipCode))}
+    if (phrase.contains("%weathertoday%")) {phrase = phrase.replace('%weathertoday%', getWeather("today", zipCode))}
+    if (phrase.contains("%weathertonight%")) {phrase = phrase.replace('%weathertonight%', getWeather("tonight", zipCode))}
+    if (phrase.contains("%weathertomorrow%")) {phrase = phrase.replace('%weathertomorrow%', getWeather("tomorrow", zipCode))}
+    if (phrase.contains("%weathercurrent(")) {
+        if (phrase.contains(")%")) {
+            def phraseZipStart = (phrase.indexOf("%weathercurrent(") + 16)
+            def phraseZipEnd = (phrase.indexOf(")%"))
+            zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
+            LOGDEBUG("Custom zipCode: ${zipCode}")
+            phrase = phrase.replace("%weathercurrent(${zipCode})%", getWeather("current", zipCode))
+        } else {
+            phrase = "Custom Zip Code format error in request for current weather"
+        }
+    }
+    if (phrase.contains("%weathertoday(")) {
+        if (phrase.contains(")%")) {
+            def phraseZipStart = (phrase.indexOf("%weathertoday(") + 14)
+            def phraseZipEnd = (phrase.indexOf(")%"))
+            zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
+            LOGDEBUG("Custom zipCode: ${zipCode}")
+            phrase = phrase.replace("%weathertoday(${zipCode})%", getWeather("today", zipCode))
+        } else {
+            phrase = "Custom Zip Code format error in request for today's weather"
+        }
+    }
+    if (phrase.contains("%weathertonight(")) {
+        if (phrase.contains(")%")) {
+            def phraseZipStart = (phrase.indexOf("%weathertonight(") + 16)
+            def phraseZipEnd = (phrase.indexOf(")%"))
+            zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
+            LOGDEBUG("Custom zipCode: ${zipCode}")
+            phrase = phrase.replace("%weathertonight(${zipCode})%", getWeather("tonight", zipCode))
+        } else {
+            phrase = "Custom Zip Code format error in request for tonight's weather"
+        }
+    }
+    if (phrase.contains("%weathertomorrow(")) {
+        if (phrase.contains(")%")) {
+            def phraseZipStart = (phrase.indexOf("%weathertomorrow(") + 17)
+            def phraseZipEnd = (phrase.indexOf(")%"))
+            zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
+            LOGDEBUG("Custom zipCode: ${zipCode}")
+            phrase = phrase.replace("%weathertomorrow(${zipCode})%", getWeather("tomorrow", zipCode))
+        } else {
+            phrase = "Custom ZipCode format error in request for tomorrow's weather"
+        }
+    }
     return phrase
 }
 
@@ -3613,66 +3726,60 @@ def TalkQueue(phrase, customSpeechDevice, evt){
     LOGDEBUG("TALKQUEUE()")
 }
 
-def getWeather(mode) {
+def getWeather(mode, zipCode) {
     //Function derived from "Sonos Weather Forecast" SmartApp by Smartthings (modified)
-	if (location.zipCode) {
-        LOGDEBUG("Processing: getWeather(${mode})")
-		def weather = getWeatherFeature("forecast", location.zipCode)
-		def current = getWeatherFeature("conditions", location.zipCode)
-		def isMetric = location.temperatureScale == "C"
-		def delim = ""
-		def sb = new StringBuilder()
-		if (mode == "current") {
-				if (isMetric) {
-                	sb << "The current temperature is ${Math.round(current.current_observation.temp_c)} degrees."
-                }
-                else {
-                	sb << "The current temperature is ${Math.round(current.current_observation.temp_f)} degrees."
-                }
-				delim = " "
-			}
-        else if (mode == "today") {
-				sb << delim
-				sb << "Today's forecast is "
-				if (isMetric) {
-                	sb << weather.forecast.txt_forecast.forecastday[0].fcttext_metric 
-                }
-                else {
-                	sb << weather.forecast.txt_forecast.forecastday[0].fcttext
-                }
-			}
-		else if (mode == "tonight") {
-                sb << delim
-				sb << "Tonight will be "
-				if (isMetric) {
-                	sb << weather.forecast.txt_forecast.forecastday[1].fcttext_metric 
-                }
-                else {
-                	sb << weather.forecast.txt_forecast.forecastday[1].fcttext
-                }
-			}
-		else if (mode == "tomorrow") {
-				sb << delim
-				sb << "Tomorrow will be "
-				if (isMetric) {
-                	sb << weather.forecast.txt_forecast.forecastday[2].fcttext_metric 
-                }
-                else {
-                	sb << weather.forecast.txt_forecast.forecastday[2].fcttext
-                }
-			}
+    LOGDEBUG("Processing: getWeather(${mode},${zipCode})")
+	def weather = getWeatherFeature("forecast", zipCode)
+	def current = getWeatherFeature("conditions", zipCode)
+	def isMetric = location.temperatureScale == "C"
+	def delim = ""
+	def sb = new StringBuilder()
+	if (mode == "current") {
+			if (isMetric) {
+               	sb << "The current temperature is ${Math.round(current.current_observation.temp_c)} degrees."
+            }
+            else {
+               	sb << "The current temperature is ${Math.round(current.current_observation.temp_f)} degrees."
+            }
+			delim = " "
+	} //mode == current
+    else if (mode == "today") {
+		sb << delim
+		sb << "Today's forecast is "
+		if (isMetric) {
+           	sb << weather.forecast.txt_forecast.forecastday[0].fcttext_metric 
+        }
         else {
-            sb < "ERROR: Requested weather mode was not recognized."
-		}
-		def msg = sb.toString()
-        msg = msg.replaceAll(/([0-9]+)C/,'$1 degrees')
-		LOGDEBUG("msg = ${msg}")
-		return(msg)
-	}
-	else {
-        LOGDEBUG("SmartThings location zipcode not set!, Cannot retrieve weather.")
-		return("Please set the location of your hub with the SmartThings mobile app to receive weather forecasts.")
-	}
+           	sb << weather.forecast.txt_forecast.forecastday[0].fcttext
+        }
+	} //mode == today
+	else if (mode == "tonight") {
+        sb << delim
+		sb << "Tonight will be "
+		if (isMetric) {
+          	sb << weather.forecast.txt_forecast.forecastday[1].fcttext_metric 
+        }
+        else {
+        	sb << weather.forecast.txt_forecast.forecastday[1].fcttext
+        }
+	} //mode == tonight
+	else if (mode == "tomorrow") {
+		sb << delim
+		sb << "Tomorrow will be "
+		if (isMetric) {
+           	sb << weather.forecast.txt_forecast.forecastday[2].fcttext_metric 
+        }
+        else {
+          	sb << weather.forecast.txt_forecast.forecastday[2].fcttext
+        }
+	} //mode == tomorrow
+    else {
+        sb < "ERROR: Requested weather mode was not recognized."
+    }//mode = unknown
+	def msg = sb.toString()
+    msg = msg.replaceAll(/([0-9]+)C/,'$1 degrees')
+    LOGDEBUG("msg = ${msg}")
+	return(msg)
 }
 
 def poll(){
@@ -3757,5 +3864,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta5"
+    state.appversion = "1.1.4-Beta6"
 }
