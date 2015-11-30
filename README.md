@@ -1,7 +1,7 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, Ubi and VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.1.4-Beta5 <br />
+Version: 1.1.4-Beta6 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -135,5 +135,14 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
   * BugFix: Setting changes were not activated when editing within the "Configure Defaults" menu and pressing Done.  Settings only activated after editing within the "Configure Events" menu and pressing Done.  Resolved.
   * Feature Enhancement:  Talk() now checks two places for current playing status to try to better detect if the device is playing.
   * New Feature: Upon Install or settings update, a poll process will execute every minute to check all configured speech devices for their latest status.  This is in an effort to better detect if a device is playing before interrupting to speak. (Note: VLCThing doesn't report 'playing' until after the second poll or 2 minutes into a playlist; others may as well).
-11/13/2015 - 1.1.4-Beta5
+* 11/13/2015 - 1.1.4-Beta5
   * Feature modification: Delay polling for 2 minutes after any speech event.  This also has the effect of restarting the poll schedule if for any reason it has stopped.
+* 11/29/2015 - 1.1.4-Beta6
+  * Feature Modification: Modified Start page, About section
+  * New Feature: Added Status page item to show the ZipCode that SmartThings has derived from the hub via Latitude/Longitude.
+  * New Feature: Added Phrase Variables:
+    * %weathercurrent(00000)% = Current weather based on custom zipcode (replace 00000)
+    * %weathertoday(00000)% = Today's weather based on custom zipcode (replace 00000)
+    * %weathertonight(00000)% = Tonight's weather based on custom zipcode (replace 00000)
+    * %weathertomorrow(00000)% = Tomorrow's weather based on custom zipcode (replace 00000)
+  * New Feature: Added "Help" section to each event configuration page with a "Phrase Tokens" option to give the user an In-App reference of the known phrase tokens that can be used.
