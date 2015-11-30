@@ -1,6 +1,9 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
-Pair with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device!  See <b>More Details</b> section below for more features.<br />
+
+Pair it with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device! <br />  
+See <b>More Details</b> section below for more features.<br />
+
 Version: 1.1.4-Beta6 <br />
 
 #Support the project
