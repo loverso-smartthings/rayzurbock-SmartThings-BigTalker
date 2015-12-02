@@ -4,7 +4,7 @@ Big Talker is a SmartApp for SmartThings that can make your house talk depending
 Pair it with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device! <br />  
 See <b>More Details</b> section below for more features.<br />
 
-Version: 1.1.4-Beta6 <br />
+Version: 1.1.4-Beta7 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -149,3 +149,5 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
     * %weathertonight(00000)% = Tonight's weather based on custom zipcode (replace 00000)
     * %weathertomorrow(00000)% = Tomorrow's weather based on custom zipcode (replace 00000)
   * New Feature: Added "Help" section to each event configuration page with a "Phrase Tokens" option to give the user an In-App reference of the known phrase tokens that can be used.
+* 12/1/2015 - 1.1.4-Beta7
+  * BugFix:  Fixed an issue in 1.1.4-Beta where the Poller would stop working if any of the speech devices did not respond to the poll device within the allowed SmartThings app execution seconds.
