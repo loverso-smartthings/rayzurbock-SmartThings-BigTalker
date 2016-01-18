@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta9 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta10 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2016 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -2916,8 +2916,11 @@ def processPhraseVariables(phrase, evt){
             phrase = "Custom ZipCode format error in request for tomorrow's weather"
         }
     }
-    if (phrase.contains(",")) { phrase = phrase.replace(","," - ") }
-    if (phrase.contains(".")) { phrase = phrase.replace("."," - ") }
+    if (state.speechDeviceType == "capability.speechSynthesis"){
+        //ST TTS Engine pronunces "Dash", so only convert for speechSynthesis devices (LANnouncer)
+        if (phrase.contains(",")) { phrase = phrase.replace(","," - ") }
+        if (phrase.contains(".")) { phrase = phrase.replace("."," - ") }
+    }
     if (phrase.contains('"')) { phrase = phrase.replace('"',"") }
     if (phrase.contains("'")) { phrase = phrase.replace("'","") }
     if (phrase.contains("10S")) { phrase = phrase.replace("10S","tens") }
@@ -2949,7 +2952,11 @@ def adjustWeatherPhrase(phraseIn){
     phraseOut = phraseOut.replace(" NNW ", " North Northwest ")
     phraseOut = phraseOut.replace(" SSE ", " South Southeast ")
     phraseOut = phraseOut.replace(" SSW ", " South Southwest ")
-    phraseOut = phraseOut.replace(" MPH", " Miles Per Hour.")
+    phraseOut = phraseOut.replace(" ENE ", " East Northeast ")
+    phraseOut = phraseOut.replace(" ESE ", " East Southeast ")
+    phraseOut = phraseOut.replace(" WNW ", " West Northeast ")
+    phraseOut = phraseOut.replace(" WSW ", " West Southwest ")
+    phraseOut = phraseOut.replace(" MPH", " Miles Per Hour")
     phraseOut = phraseOut.replace(" MM)", " Milimeters ")
     return phraseOut
 }
@@ -3906,5 +3913,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta9"
+    state.appversion = "1.1.4-Beta10"
 }
