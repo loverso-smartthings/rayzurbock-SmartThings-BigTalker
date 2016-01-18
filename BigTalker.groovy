@@ -2950,9 +2950,9 @@ def adjustWeatherPhrase(phraseIn){
     phraseOut = phraseOut.replace(" SSE ", " South Southeast ")
     phraseOut = phraseOut.replace(" SSW ", " South Southwest ")
     phraseOut = phraseOut.replace(" MPH", " Miles Per Hour.")
-    phraseOut = phraseOut.replace(" ft ", " Feet ")
-    phraseOut = phraseOut.replace(" in ", " Inches ")
-    phraseOut = phraseOut.replace(" mm)", " Milimeters ")
+    phraseOut = phraseOut.replace(" FT ", " Feet ")
+    phraseOut = phraseOut.replace(" IN ", " Inches ")
+    phraseOut = phraseOut.replace(" MM)", " Milimeters ")
     return phraseOut
 }
 
