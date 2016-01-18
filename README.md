@@ -4,7 +4,7 @@ Big Talker is a SmartApp for SmartThings that can make your house talk depending
 Pair it with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device! <br />  
 See <b>More Details</b> section below for more features.<br />
 
-Version: 1.1.4-Beta9 <br />
+Version: 1.1.4-Beta10 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -14,7 +14,7 @@ Version: 1.1.4-Beta9 <br />
 
 #License
 **BIG TALKER -- A SmartApp for SmartThings Home Automation System** <br />
-Copyright 2014 - rayzur [at] rayzurbock.com - Brian S. Lowrance <br />
+Copyright 2014-2016 - rayzur [at] rayzurbock.com - Brian S. Lowrance <br />
 For the latest version, development and test releases visit http://www.github.com/rayzurbock <br />
 <br />
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the  License. You may obtain a copy of the License at: <br/>
@@ -166,3 +166,6 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
 * 1/17/2016 - 1.1.4-Beta9
   * BugFix: Corrected an issue introduced in 1.1.4-Beta8 when ' or " was used in a phrase.  These break LANnouncer, so I meant to strip them; instead I added a hyphen in their place cause "It's" to be pronounced "It" and "s".  Corrected by striping ' out properly.  This also corrected an issue where in a weather forecast "Low 10's" was pronounced "Low 10 S" instead of "Low tens".
   * Corrected an issue introduced in 1.1.4-Beta8 where multiple chained variables were not being processed.  Ie: "It's Time to Wake Up. %weathercurrent%. %weathertoday%"
+* 1/18/2016 - 1.1.4-Beta10
+  * BugFix: Do not replace "." "," with "-" while in musicPlayer mode otherwise the ST TTS engine pronounces "dash".
+  * Feature Modifications: Weather forecast wind direction ENE was not pronounced.  Added conversions for ENE, ESE, WNW, WSW.
