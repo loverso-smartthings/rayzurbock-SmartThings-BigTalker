@@ -4,7 +4,7 @@ Big Talker is a SmartApp for SmartThings that can make your house talk depending
 Pair it with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device! <br />  
 See <b>More Details</b> section below for more features.<br />
 
-Version: 1.1.4-Beta8 <br />
+Version: 1.1.4-Beta9 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -157,9 +157,12 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
   * New Feature: Added "Help" section to each event configuration page with a "Phrase Tokens" option to give the user an In-App reference of the known phrase tokens that can be used.
 * 12/1/2015 - 1.1.4-Beta7
   * BugFix:  Fixed an issue in 1.1.4-Beta where the Poller would stop working if any of the speech devices did not respond to the poll device within the allowed SmartThings app execution seconds.
-* 1/17/2015 - 1.1.4-Beta8
+* 1/17/2016 - 1.1.4-Beta8
   * Feature Modification: Add Lannouncer into the supported device descriptions for speechSynthesis.
   * Feature Modification: Remove unsupported Volume setting / function when operating in speechSynthesis mode.
   * New Feature: Add adjustWeatherPhrase() function to convert "xxF" to "xx degrees Fahrenheit", mph to "Miles Per Hour", NNE to "North Northeast", etc..
   * BugFix: Replace special characters found in phrase (ie: URL tokens) such as those that end up in weather reports which cause Lannouncer to not speak when expected.
   * BugFix: Fix Talk() routine for speechSynthesis only devices which typically do TTS on the phrase passed to them on their own or within their deviceType.
+* 1/17/2016 - 1.1.4-Beta9
+  * BugFix: Corrected an issue introduced in 1.1.4-Beta8 when ' or " was used in a phrase.  These break LANnouncer, so I meant to strip them; instead I added a hyphen in their place cause "It's" to be pronounced "It" and "s".  Corrected by striping ' out properly.  This also corrected an issue where in a weather forecast "Low 10's" was pronounced "Low 10 S" instead of "Low tens".
+  * Corrected an issue introduced in 1.1.4-Beta8 where multiple chained variables were not being processed.  Ie: "It's Time to Wake Up. %weathercurrent%. %weathertoday%"
