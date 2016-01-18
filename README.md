@@ -158,8 +158,8 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
 * 12/1/2015 - 1.1.4-Beta7
   * BugFix:  Fixed an issue in 1.1.4-Beta where the Poller would stop working if any of the speech devices did not respond to the poll device within the allowed SmartThings app execution seconds.
 * 1/17/2015 - 1.1.4-Beta8
-  *Feature Modification: Add Lannouncer into the supported device descriptions for speechSynthesis.
-  *Feature Modification: Remove unsupported Volume setting / function when operating in speechSynthesis mode.
-  *New Feature: Add adjustWeatherPhrase() function to convert "xxF" to "xx degrees Fahrenheit", mph to "Miles Per Hour", NNE to "North Northeast", etc..
-  *BugFix: Replace special characters found in phrase (ie: URL tokens) such as those that end up in weather reports which cause Lannouncer to not speak when expected.
-  *BugFix: Fix Talk() routine for speechSynthesis only devices which typically do TTS on the phrase passed to them on their own or within their deviceType.
+  * Feature Modification: Add Lannouncer into the supported device descriptions for speechSynthesis.
+  * Feature Modification: Remove unsupported Volume setting / function when operating in speechSynthesis mode.
+  * New Feature: Add adjustWeatherPhrase() function to convert "xxF" to "xx degrees Fahrenheit", mph to "Miles Per Hour", NNE to "North Northeast", etc..
+  * BugFix: Replace special characters found in phrase (ie: URL tokens) such as those that end up in weather reports which cause Lannouncer to not speak when expected.
+  * BugFix: Fix Talk() routine for speechSynthesis only devices which typically do TTS on the phrase passed to them on their own or within their deviceType.
