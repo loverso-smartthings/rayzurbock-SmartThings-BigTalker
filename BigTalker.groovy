@@ -1,6 +1,6 @@
 /**
  *  BIG TALKER -- Version 1.1.4-Beta8 -- A SmartApp for SmartThings Home Automation System
- *  Copyright 2014-2015 - rayzur@rayzurbock.com - Brian S. Lowrance
+ *  Copyright 2014-2016 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
  *  This SmartApp is free. Donations to support development efforts are accepted via: 
