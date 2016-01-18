@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.1.4-Beta8 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.4-Beta9 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014-2016 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -2856,60 +2856,61 @@ def processButtonEvent(index, evt){
 
 def processPhraseVariables(phrase, evt){
     def zipCode = location.zipCode
-    if (phrase.contains("%devicename%")) {phrase = phrase.replace('%devicename%', evt.displayName)}  //User given name of the device
-    if (phrase.contains("%devicetype%")) {phrase = phrase.replace('%devicetype%', evt.name)}  //Device type: motion, switch, etc...
-    if (phrase.contains("%devicechange%")) {phrase = phrase.replace('%devicechange%', evt.value)}  //State change that occurred: on/off, active/inactive, etc...
-    if (phrase.contains("%locationname%")) {phrase = phrase.replace('%locationname%', location.name)}
-    if (phrase.contains("%lastmode%")) {phrase = phrase.replace('%lastmode%', state.lastMode)}
-    if (phrase.contains("%mode%")) {phrase = phrase.replace('%mode%', location.mode)}
-    if (phrase.contains("%time%")) {phrase = phrase.replace('%time%', getTimeFromCalendar(false,true))}
-    if (phrase.contains("%weathercurrent%")) {phrase = phrase.replace('%weathercurrent%', getWeather("current", zipCode)); phrase = adjustWeatherPhrase(phrase)}
-    if (phrase.contains("%weathertoday%")) {phrase = phrase.replace('%weathertoday%', getWeather("today", zipCode)); phrase = adjustWeatherPhrase(phrase)}
-    if (phrase.contains("%weathertonight%")) {phrase = phrase.replace('%weathertonight%', getWeather("tonight", zipCode));phrase = adjustWeatherPhrase(phrase)}
-    if (phrase.contains("%weathertomorrow%")) {phrase = phrase.replace('%weathertomorrow%', getWeather("tomorrow", zipCode));phrase = adjustWeatherPhrase(phrase)}
-    if (phrase.contains("%weathercurrent(")) {
-        if (phrase.contains(")%")) {
-            def phraseZipStart = (phrase.indexOf("%weathercurrent(") + 16)
-            def phraseZipEnd = (phrase.indexOf(")%"))
+    if (phrase.toLowerCase().contains(" percent ")) { phrase = phrase.replace(" percent ","%") }
+    if (phrase.toLowerCase().contains("%devicename%")) {phrase = phrase.toLowerCase().replace('%devicename%', evt.displayName)}  //User given name of the device
+    if (phrase.toLowerCase().contains("%devicetype%")) {phrase = phrase.toLowerCase().replace('%devicetype%', evt.name)}  //Device type: motion, switch, etc...
+    if (phrase.toLowerCase().contains("%devicechange%")) {phrase = phrase.toLowerCase().replace('%devicechange%', evt.value)}  //State change that occurred: on/off, active/inactive, etc...
+    if (phrase.toLowerCase().contains("%locationname%")) {phrase = phrase.toLowerCase().replace('%locationname%', location.name)}
+    if (phrase.toLowerCase().contains("%lastmode%")) {phrase = phrase.toLowerCase().replace('%lastmode%', state.lastMode)}
+    if (phrase.toLowerCase().contains("%mode%")) {phrase = phrase.toLowerCase().replace('%mode%', location.mode)}
+    if (phrase.toLowerCase().contains("%time%")) {phrase = phrase.toLowerCase().replace('%time%', getTimeFromCalendar(false,true))}
+    if (phrase.toLowerCase().contains("%weathercurrent%")) {phrase = phrase.toLowerCase().replace('%weathercurrent%', getWeather("current", zipCode)); phrase = adjustWeatherPhrase(phrase)}
+    if (phrase.toLowerCase().contains("%weathertoday%")) {phrase = phrase.toLowerCase().replace('%weathertoday%', getWeather("today", zipCode)); phrase = adjustWeatherPhrase(phrase)}
+    if (phrase.toLowerCase().contains("%weathertonight%")) {phrase = phrase.toLowerCase().replace('%weathertonight%', getWeather("tonight", zipCode));phrase = adjustWeatherPhrase(phrase)}
+    if (phrase.toLowerCase().contains("%weathertomorrow%")) {phrase = phrase.toLowerCase().replace('%weathertomorrow%', getWeather("tomorrow", zipCode));phrase = adjustWeatherPhrase(phrase)}
+    if (phrase.toLowerCase().contains("%weathercurrent(")) {
+        if (phrase.toLowerCase().contains(")%")) {
+            def phraseZipStart = (phrase.toLowerCase().indexOf("%weathercurrent(") + 16)
+            def phraseZipEnd = (phrase.toLowerCase().indexOf(")%"))
             zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
             LOGDEBUG("Custom zipCode: ${zipCode}")
-            phrase = phrase.replace("%weathercurrent(${zipCode})%", getWeather("current", zipCode))
-            phrase = adjustWeatherPhrase(phrase)
+            phrase = phrase.toLowerCase().replace("%weathercurrent(${zipCode})%", getWeather("current", zipCode))
+            phrase = adjustWeatherPhrase(phrase.toLowerCase())
         } else {
             phrase = "Custom Zip Code format error in request for current weather"
         }
     }
-    if (phrase.contains("%weathertoday(")) {
+    if (phrase.toLowerCase().contains("%weathertoday(")) {
         if (phrase.contains(")%")) {
-            def phraseZipStart = (phrase.indexOf("%weathertoday(") + 14)
-            def phraseZipEnd = (phrase.indexOf(")%"))
+            def phraseZipStart = (phrase.toLowerCase().indexOf("%weathertoday(") + 14)
+            def phraseZipEnd = (phrase.toLowerCase().indexOf(")%"))
             zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
             LOGDEBUG("Custom zipCode: ${zipCode}")
-            phrase = phrase.replace("%weathertoday(${zipCode})%", getWeather("today", zipCode))
-            phrase = adjustWeatherPhrase(phrase)
+            phrase = phrase.toLowerCase().replace("%weathertoday(${zipCode})%", getWeather("today", zipCode))
+            phrase = adjustWeatherPhrase(phrase.toLowerCase())
         } else {
             phrase = "Custom Zip Code format error in request for today's weather"
         }
     }
-    if (phrase.contains("%weathertonight(")) {
+    if (phrase.toLowerCase().contains("%weathertonight(")) {
         if (phrase.contains(")%")) {
-            def phraseZipStart = (phrase.indexOf("%weathertonight(") + 16)
-            def phraseZipEnd = (phrase.indexOf(")%"))
+            def phraseZipStart = (phrase.toLowerCase().indexOf("%weathertonight(") + 16)
+            def phraseZipEnd = (phrase.toLowerCase().indexOf(")%"))
             zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
             LOGDEBUG("Custom zipCode: ${zipCode}")
-            phrase = phrase.replace("%weathertonight(${zipCode})%", getWeather("tonight", zipCode))
+            phrase = phrase.toLowerCase().replace("%weathertonight(${zipCode})%", getWeather("tonight", zipCode))
             phrase = adjustWeatherPhrase(phrase)
         } else {
             phrase = "Custom Zip Code format error in request for tonight's weather"
         }
     }
-    if (phrase.contains("%weathertomorrow(")) {
+    if (phrase.toLowerCase().contains("%weathertomorrow(")) {
         if (phrase.contains(")%")) {
-            def phraseZipStart = (phrase.indexOf("%weathertomorrow(") + 17)
-            def phraseZipEnd = (phrase.indexOf(")%"))
+            def phraseZipStart = (phrase.toLowerCase().indexOf("%weathertomorrow(") + 17)
+            def phraseZipEnd = (phrase.toLowerCase().indexOf(")%"))
             zipCode = phrase.substring(phraseZipStart, phraseZipEnd)
             LOGDEBUG("Custom zipCode: ${zipCode}")
-            phrase = phrase.replace("%weathertomorrow(${zipCode})%", getWeather("tomorrow", zipCode))
+            phrase = phrase.toLowerCase().replace("%weathertomorrow(${zipCode})%", getWeather("tomorrow", zipCode))
             phrase = adjustWeatherPhrase(phrase)
         } else {
             phrase = "Custom ZipCode format error in request for tomorrow's weather"
@@ -2917,8 +2918,18 @@ def processPhraseVariables(phrase, evt){
     }
     if (phrase.contains(",")) { phrase = phrase.replace(","," - ") }
     if (phrase.contains(".")) { phrase = phrase.replace("."," - ") }
-    if (phrase.contains('"')) { phrase = phrase.replace('"'," - ") }
-    if (phrase.contains("'")) { phrase = phrase.replace("'"," - ") }
+    if (phrase.contains('"')) { phrase = phrase.replace('"',"") }
+    if (phrase.contains("'")) { phrase = phrase.replace("'","") }
+    if (phrase.contains("10S")) { phrase = phrase.replace("10S","tens") }
+    if (phrase.contains("20S")) { phrase = phrase.replace("20S","twenties") }
+    if (phrase.contains("30S")) { phrase = phrase.replace("30S","thirties") }
+    if (phrase.contains("40S")) { phrase = phrase.replace("40S","fourties") }
+    if (phrase.contains("50S")) { phrase = phrase.replace("50S","fifties") }
+    if (phrase.contains("60S")) { phrase = phrase.replace("60S","sixties") }
+    if (phrase.contains("70S")) { phrase = phrase.replace("70S","seventies") }
+    if (phrase.contains("80S")) { phrase = phrase.replace("80S","eighties") }
+    if (phrase.contains("90S")) { phrase = phrase.replace("90S","nineties") }
+    if (phrase.contains("100S")) { phrase = phrase.replace("100S","one hundreds") }
     if (phrase.contains("%")) { phrase = phrase.replace("%"," percent ") }
     return phrase
 }
@@ -3897,5 +3908,5 @@ def LOGERROR(txt){
 }
 
 def setAppVersion(){
-    state.appversion = "1.1.4-Beta8"
+    state.appversion = "1.1.4-Beta9"
 }
