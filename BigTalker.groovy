@@ -74,7 +74,7 @@ def pageStart(){
         section("About"){
             def AboutApp = ""
             AboutApp += 'Big Talker is a SmartApp that can make your house talk depending on various triggered events.\n\n'
-            AboutApp += 'Pair with a SmartThings compatible audio device such as Sonos, Ubi, Lannouncer, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device!\n\n'
+            AboutApp += 'Pair with a SmartThings compatible audio device such as Sonos, Ubi, LANnouncer, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device!\n\n'
             AboutApp += 'You can contribute to the development of this SmartApp by making a PayPal donation to rayzur@rayzurbock.com or visit http://rayzurbock.com/store\n\n'
             if (!(state.appversion == null)){ 
                 AboutApp += "Big Talker ${state.appversion}\nhttp://www.github.com/rayzurbock\n" 
@@ -98,7 +98,7 @@ def pageStatus(){
             enabledDevices += "musicPlayer (Sonos, VLCThing, Generic DLNA)"
         }
         if (state.speechDeviceType == "capability.speechSynthesis") {
-            enabledDevices += "speechSynthesis (Ubi, Lannouncer)"
+            enabledDevices += "speechSynthesis (Ubi, LANnouncer)"
         }
         enabledDevices += "\n\n"
         enabledDevices += "Default Speech Devices:\n"
@@ -1614,7 +1614,7 @@ def pageConfigureSpeechDeviceType(){
         //section ("Speech Device Type Support"){
         section (){
             paragraph "${app.label} can support either 'Music Player' or 'Speech Synthesis' devices."
-            paragraph "'Music Player' typically supports devices such as Sonos, VLCThing, Generic Media Renderer.\n\n'Speech Synthesis' typically supports devices such as Ubi and Lannouncer.\n\nThis setting cannot be changed without reinstalling ${app.label}."
+            paragraph "'Music Player' typically supports devices such as Sonos, VLCThing, Generic Media Renderer.\n\n'Speech Synthesis' typically supports devices such as Ubi and LANnouncer.\n\nThis setting cannot be changed without reinstalling ${app.label}."
             input "speechDeviceType", "bool", title: "ON=Music Player\nOFF=Speech Synthesis", required: true, defaultValue: true, submitOnChange: true
             paragraph "\nClick Next (top right) to continue configuration...\n"
             if (speechDeviceType == true || speechDeviceType == null) {state.speechDeviceType = "capability.musicPlayer"}
