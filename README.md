@@ -71,6 +71,11 @@ Voice phrases support the following variables (to be filled in at runtime)
 * **%weathertoday%** = Today's weather (from Weather Underground; based on SmartThings Hub Zipcode)
 * **%weathertonight%** = Tonight's weather (from Weather Underground; based on SmartThings Hub Zipcode)
 * **%weathertomorrow%** = Tomorrow's weather (from Weather Underground; based on SmartThings Hub Zipcode)
+* **%weathercurrent(00000)%** = Current weather (from Weather Underground; using custom Zipcode; replace 00000)
+* **%weathertoday(00000)%** = Today's weather (from Weather Underground; using custom Zipcode; replace 00000)
+* **%weathertonight(00000)%** = Tonight's weather (from Weather Underground; using custom Zipcode; replace 00000)
+* **%weathertomorrow(00000)%** = Tomorrow's weather (from Weather Underground; using custom Zipcode; replace 00000)
+  * (00000) can also be replaced by any supported location of the WeatherUnderground API such as (France/Paris), (latitude,longitude), (AirportCode), (State/City)
 
 For example when turning off a switch named "Office Light" with a spoken phrase of "*%devicename% %devicetype% has been turned %devicechange%*" would speak "*Office light switch has been turned off*"
 
