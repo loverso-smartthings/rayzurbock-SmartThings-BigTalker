@@ -4,7 +4,7 @@ Big Talker is a SmartApp for SmartThings that can make your house talk depending
 Pair it with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing (running on your computer or Raspberry Pi) or a DLNA device using the "Generic MediaRenderer" SmartApp/Device! <br />  
 See <b>More Details</b> section below for more features.<br />
 
-Version: 1.1.4-Beta7 <br />
+Version: 1.1.4-Beta8 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -148,6 +148,13 @@ Keep in mind, if you configure highly active or too many devices, it may get ann
     * %weathertoday(00000)% = Today's weather based on custom zipcode (replace 00000)
     * %weathertonight(00000)% = Tonight's weather based on custom zipcode (replace 00000)
     * %weathertomorrow(00000)% = Tomorrow's weather based on custom zipcode (replace 00000)
+    * (00000) can also be replaced by any supported location of the WeatherUnderground API such as (France/Paris), (latitude,longitude), (AirportCode), (State/City)
   * New Feature: Added "Help" section to each event configuration page with a "Phrase Tokens" option to give the user an In-App reference of the known phrase tokens that can be used.
 * 12/1/2015 - 1.1.4-Beta7
   * BugFix:  Fixed an issue in 1.1.4-Beta where the Poller would stop working if any of the speech devices did not respond to the poll device within the allowed SmartThings app execution seconds.
+* 1/17/2015 - 1.1.4-Beta8
+  *Feature Modification: Add Lannouncer into the supported device descriptions for speechSynthesis.
+  *Feature Modification: Remove unsupported Volume setting / function when operating in speechSynthesis mode.
+  *New Feature: Add adjustWeatherPhrase() function to convert "xxF" to "xx degrees Fahrenheit", mph to "Miles Per Hour", NNE to "North Northeast", etc..
+  *BugFix: Replace special characters found in phrase (ie: URL tokens) such as those that end up in weather reports which cause Lannouncer to not speak when expected.
+  *BugFix: Fix Talk() routine for speechSynthesis only devices which typically do TTS on the phrase passed to them on their own or within their deviceType.
