@@ -1,6 +1,7 @@
-#NEWER VERSION EXISTS IN MASTER ( https://github.com/rayzurbock/SmartThings-BigTalker ).  
-THIS VERSION IS NOW OLD
-
+#NEWER VERSION EXISTS IN MASTER 
+https://github.com/rayzurbock/SmartThings-BigTalker <br />
+THIS BRANCH / BETA VERSION IS NOW OLD <br />
+<br />
 
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
